@@ -9,6 +9,7 @@ struct PadGridView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            Spacer(minLength: 8)
             // Display area
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -23,7 +24,7 @@ struct PadGridView: View {
                     .padding()
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 100)
+            .frame(height: 200)
 
             // 4x4 grid
             LazyVGrid(columns: columns, spacing: 12) {
@@ -36,9 +37,8 @@ struct PadGridView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(.horizontal, 16)
         .background(Color(white: 0.06).ignoresSafeArea())
-        .navigationTitle("SoundPad")
     }
 }
 

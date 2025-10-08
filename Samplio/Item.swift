@@ -1,6 +1,6 @@
 //
 //  Item.swift
-//  SoundPad
+//  Samplio
 //
 //  Created by Amundeep Singh on 10/7/25.
 //

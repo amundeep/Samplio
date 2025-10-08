@@ -5,16 +5,28 @@ struct PadView: View {
     let action: () -> Void
 
     @State private var isPressed = false
+    @State private var hasFiredPress = false
 
     var body: some View {
-        Button(action: action) {
+        Button(action: {}) {
             content
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
-                .onChanged { _ in isPressed = true }
-                .onEnded { _ in isPressed = false }
+                .onChanged { _ in
+                    if !isPressed {
+                        isPressed = true
+                        if !hasFiredPress {
+                            hasFiredPress = true
+                            action()
+                        }
+                    }
+                }
+                .onEnded { _ in
+                    isPressed = false
+                    hasFiredPress = false
+                }
         )
         .accessibilityLabel(Text(pad.title))
     }
@@ -29,6 +41,7 @@ struct PadView: View {
                 .foregroundStyle(.white)
                 .shadow(radius: 1)
         }
+        .background(underGlow)
         .scaleEffect(isPressed ? 0.96 : 1.0)
         .animation(.spring(response: 0.15, dampingFraction: 0.7), value: isPressed)
     }
@@ -42,7 +55,6 @@ struct PadView: View {
             .overlay(
                 base.stroke(Color.white.opacity(0.15), lineWidth: 1)
             )
-            .overlay(glowOverlay)
             .shadow(
                 color: .black.opacity(isPressed ? 0.15 : 0.35),
                 radius: isPressed ? 2 : 8,
@@ -52,22 +64,41 @@ struct PadView: View {
     }
 
     @ViewBuilder
-    private var glowOverlay: some View {
+    private var underGlow: some View {
         if isPressed {
             let base = RoundedRectangle(cornerRadius: 12, style: .continuous)
+
+            // A very tight, bright rim glow
             base
-                .stroke(Color.red.opacity(0.9), lineWidth: 4)
+                .inset(by: -3) // minimal spread
+                .stroke(Color.red.opacity(1.0), lineWidth: 4)
                 .blur(radius: 6)
                 .overlay(
                     base
-                        .stroke(Color.red.opacity(0.6), lineWidth: 10)
-                        .blur(radius: 12)
+                        .inset(by: -4)
+                        .stroke(Color.red.opacity(0.9), lineWidth: 8)
+                        .blur(radius: 10)
                 )
+                // Dramatic falloff via masked gradient ring
                 .overlay(
                     base
-                        .stroke(Color.red.opacity(0.3), lineWidth: 16)
-                        .blur(radius: 20)
+                        .inset(by: -5)
+                        .stroke(Color.red, lineWidth: 14)
+                        .blur(radius: 14)
+                        .mask(
+                            base
+                                .inset(by: -5)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.white, Color.white.opacity(0.4), Color.clear],
+                                        startPoint: .center,
+                                        endPoint: .bottom
+                                    ),
+                                    lineWidth: 14
+                                )
+                        )
                 )
+                .blendMode(.plusLighter)
         } else {
             EmptyView()
         }

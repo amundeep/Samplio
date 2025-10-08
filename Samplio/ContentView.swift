@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  SoundPad
+//  Samplio
 //
 //  Created by Amundeep Singh on 10/7/25.
 //
@@ -15,10 +15,14 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             PadGridView()
+                .ignoresSafeArea(.container, edges: .top)
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
     NavigationStack { PadGridView() }
+        .ignoresSafeArea(.container, edges: .top)
+        .toolbar(.hidden, for: .navigationBar)
 }
